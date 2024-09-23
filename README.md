@@ -6,6 +6,7 @@ List of participants and affiliations:
 - Soham Shirolkar, University of South Florida
 - Steven Weaver, Temple University
 - Garima Rani, Friedrich Schiller University Jena
+- Sharvari Narendra, University of Virginia
   
 ## Project Goals
 
