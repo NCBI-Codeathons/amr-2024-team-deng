@@ -5,7 +5,8 @@ List of participants and affiliations:
 - Participant, Affiliation (Team Leader)
 - Participant, Affiliation
 - Steven Weaver, Temple University
-
+- Garima Rani, Friedrich Schiller University Jena
+  
 ## Project Goals
 
 This project aims to develop a deep learning model to predict antibiotic resistance in bacteria using genomic and structural information of bacterial receptors and antibiotics. The model will utilize graph neural networks to identify AMR biomarkers and contribute to the development of effective treatment strategies.
