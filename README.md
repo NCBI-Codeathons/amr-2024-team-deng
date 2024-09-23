@@ -3,7 +3,7 @@
 List of participants and affiliations:
 
 - Participant, Affiliation (Team Leader)
-- Participant, Affiliation
+- Soham Shirolkar, University of South Florida
 - Steven Weaver, Temple University
 - Garima Rani, Friedrich Schiller University Jena
   
