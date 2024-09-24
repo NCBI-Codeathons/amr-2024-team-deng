@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(tidyverse)
+library(ggplot2)
+library(PubChemR)
+
+vampr <- read_tsv("/Users/sharvari/Desktop/NCBI Codeathon/antibiogram_phenotype.txt")
+
+g <- ggplot(vampr, aes(bacteria, antibiotics, fill= phenotype)) + 
+  geom_tile() + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + ggtitle("VAMPr dataset")
+
+ggsave(plot = g, filename = "/Users/sharvari/Desktop/NCBI Codeathon/VAMPr_dataset_heatmap.png", width = 15, height = 10, dpi=300)
+
+ecoli_vampr <- vampr %>% filter(bacteria == "Escherichia coli") %>% distinct(antibiotics)
+
+for (i in 1:nrow(ecoli_vampr)) {
+  print(ecoli_vampr$antibiotics[i])
+  try(
+    download(
+      filename = ecoli_vampr$antibiotics[i],
+      outformat = "json",
+      path = "/Users/sharvari/Desktop/2D_compound/",
+      identifier = ecoli_vampr$antibiotics[i],
+      namespace = "name",
+      domain = "compound",
+      overwrite = TRUE
+    )
+  )
+}
+
+# received error for "amoxicillin-clavulanic acid" so downloading that manually
+
+```
+
