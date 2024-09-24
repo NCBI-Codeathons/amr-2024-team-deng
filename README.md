@@ -7,6 +7,7 @@ List of participants and affiliations:
 - Steven Weaver, Temple University
 - Garima Rani, Friedrich Schiller University Jena
 - Sharvari Narendra, University of Virginia
+- Wengang Zhang, National Cancer Institute, NIH
   
 ## Project Goals
 
