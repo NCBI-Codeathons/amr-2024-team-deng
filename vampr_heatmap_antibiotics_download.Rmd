@@ -24,7 +24,7 @@ for (i in 1:nrow(ecoli_vampr)) {
     download(
       filename = ecoli_vampr$antibiotics[i],
       outformat = "json",
-      path = "/Users/sharvari/Desktop/2D_compound/",
+      path = "/Users/sharvari/Desktop/NCBI Codeathon/vampr_antibiotics_2D_compound_structures/",
       identifier = ecoli_vampr$antibiotics[i],
       namespace = "name",
       domain = "compound",
