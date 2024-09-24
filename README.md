@@ -2,7 +2,7 @@
 
 List of participants and affiliations:
 
-- Yixiang Deng (Team Leader)
+- Yixiang Deng (Team Leader, University of Delaware)
 - Soham Shirolkar, University of South Florida
 - Steven Weaver, Temple University
 - Garima Rani, Friedrich Schiller University Jena
