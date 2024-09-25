@@ -18,7 +18,10 @@ Keywords: Graph neural networks, AMR biomarkers, Bacterial receptors, Antibiotic
 
 ## Approach
 
-Data collection - Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance))bioinformatics tool, we acquired a dataset consisting of information about bacteria-antibiotic relationships. 
+Data collection 
+
+- Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance))bioinformatics tool, we acquired a dataset consisting of information about bacteria-antibiotic relationships.
+- Retrieve data from AST (Antimicrobial Susceptibility Testing) and MicroBig-EE databases.
 
 Model construction - 
 GNN Workflow for Antibiotic Resistance Prediction
@@ -41,11 +44,24 @@ GNN Workflow for Antibiotic Resistance Prediction
 
 Evaluate the model by predicting whether new bacteria exhibit resistance to specific antibiotics, based on the learned graph structure.
 
+
+## Getting Started
+### Prerequisites
+- Python 3.7+
+- PyTorch
+- PyTorch Geometric
+- pandas
+- Google Cloud BigQuery
+
+### Installation 
+```pip install torch torch-geometric pandas google-cloud-bigquery```
+
+### Usage
+
 ## Results
 
 ## References 
 Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
-
 
 ## Future Work
 
