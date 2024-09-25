@@ -14,7 +14,7 @@ List of participants and affiliations:
 
 This project aims to develop a deep-learning model to predict antibiotic resistance in bacteria using genomic and structural information of bacterial receptors and antibiotics. The model will utilize graph neural networks to identify AMR biomarkers and contribute to the development of effective treatment strategies.
 
-Keywords: Graph neural networks, AMR biomarkers, Bacterial receptors, Antibiotics, Genomic data, Structural data, Drug resistance, Machine learning
+Keywords: Graph neural networks, AMR detection, Antibiotics, Genomic data, Structural data, Drug resistance, Machine learning
 
 ## Approach
 ![Workflow chart](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/workflow_chart.png)
