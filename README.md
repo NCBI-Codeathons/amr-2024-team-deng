@@ -17,7 +17,7 @@ This project aims to develop a deep-learning model to predict antibiotic resista
 Keywords: Graph neural networks, AMR biomarkers, Bacterial receptors, Antibiotics, Genomic data, Structural data, Drug resistance, Machine learning
 
 ## Approach
-![alt text]([http://url/to/img.png](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/workflow_chart.png))
+![alt text]([http://url/to/img.png](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/workflow_chart.png)
 ### Data collection 
 
 - Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance))bioinformatics tool, we acquired a dataset consisting of information about bacteria-antibiotic relationships.
