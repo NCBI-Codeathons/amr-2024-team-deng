@@ -18,20 +18,24 @@ Keywords: Graph neural networks, AMR biomarkers, Bacterial receptors, Antibiotic
 
 ## Approach
 
-Data collection 
+### Data collection 
 
 - Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance))bioinformatics tool, we acquired a dataset consisting of information about bacteria-antibiotic relationships.
 - Retrieve data from AST (Antimicrobial Susceptibility Testing) and MicroBig-EE databases.
 
-Model construction - 
+### Data processing 
+- Build a graph linking antibiotic data from AST to phenotype information.
+- Incorporate additional data from MicroBig-EE, chemprop, and other relevant sources.
+
+### Model construction
 GNN Workflow for Antibiotic Resistance Prediction
 
 - Define Nodes:
   - Treat bacteria and antibiotics as nodes in the graph.
-  - Node embeddings - Using genetic information or latent representations from genomic data.
+  - Create node embeddings using genetic information or latent representations from genomic data.
 
 - Create Adjacency Matrix:
-  - Use binary data (resistance vs non-resistance) from the VAMPr data to build the adjacency matrix.
+  - Use binary data (resistance vs non-resistance) from the VAMPr or AST data to build the adjacency matrix.
 
 - Graph construction:
   - Nodes: Embedded bacteria and antibiotics.
@@ -41,9 +45,10 @@ GNN Workflow for Antibiotic Resistance Prediction
   - Perform link prediction to predict whether an unobserved bacterium (e.g., B1) is resistant to antibiotics (A1 to An).
   - The model will learn to predict edges, where a link between a bacterium and antibiotic represents resistance.
 
+### Model training and evaluation
 
-Evaluate the model by predicting whether new bacteria exhibit resistance to specific antibiotics, based on the learned graph structure.
-
+- Create a GNN model and train it on the processed data.
+- Evaluate the model by predicting whether new bacteria exhibit resistance to specific antibiotics, based on the learned graph structure.
 
 ## Getting Started
 ### Prerequisites
