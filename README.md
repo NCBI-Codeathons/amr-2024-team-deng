@@ -21,7 +21,8 @@ Keywords: Graph neural networks, AMR biomarkers, Bacterial receptors, Antibiotic
 ### Data collection 
 
 - Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance))bioinformatics tool, we acquired a dataset consisting of information about bacteria-antibiotic relationships.
-- Retrieve data from AST (Antimicrobial Susceptibility Testing) and MicroBig-EE databases.
+- Retrieve data from AST (Antimicrobial Susceptibility Testing) and MicroBig-EE databases with a focus on E coli.
+- Downlaod antibiotics' structure data from PubChem
 
 ### Data processing 
 - Build a graph linking antibiotic data from AST to phenotype information.
