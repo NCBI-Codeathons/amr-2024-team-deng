@@ -65,6 +65,10 @@ Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh
 Heid, Esther, et al. "Chemprop: a machine learning package for chemical property prediction." Journal of Chemical Information and Modeling 64.1 (2023): 9-17.
 
 ## Future Work
+- Expand the model to predict resistance for a wider range of bacteria and antibiotics.
+- Incorporate additional molecular descriptors and bacterial genomic features to improve prediction accuracy.
+- Develop a web interface for easy access to the AMR prediction tool.
+
 ## NCBI Codeathon Disclaimer
 
 This software was created as part of an NCBI codeathon, a hackathon-style event focused on rapid innovation. While we encourage you to explore and adapt this code, please be aware that NCBI does not provide ongoing support for it.
