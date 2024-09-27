@@ -47,6 +47,16 @@ Chemprop Workflow for Antibiotic Resistance Prediction
 - Use cross-validation to assess model performance and prevent overfitting.
 - Evaluate the model by predicting resistance for known antibiotics and potentially new compounds.
 
+
+
+## Results
+Our Chemprop-based model for predicting antibiotic resistance demonstrated promising results in several key areas:
+ - The initial model using VAMPr data showed limitations due to the small dataset size.
+ - The switch to AST data for E. coli provided more robust results.
+ - Hyperparameter tuning demonstrated positive impacts on model performance.
+
+
+
 ## Getting Started
 ### Prerequisites
 - Python 3.7+
@@ -62,12 +72,7 @@ Chemprop Workflow for Antibiotic Resistance Prediction
 ```pip install torch torch-geometric pandas google-cloud-bigquery chemprop rdkit scikit-learn```
 
 ### Usage
-```jupyter notebook model.ipynb &```
-## Results
-Our Chemprop-based model for predicting antibiotic resistance demonstrated promising results in several key areas:
- - The initial model using VAMPr data showed limitations due to the small dataset size.
- - The switch to AST data for E. coli provided more robust results.
- - Hyperparameter tuning demonstrated positive impacts on model performance.
+```jupyter notebook notebooks/model.ipynb &```
 
 ## References 
 Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
