@@ -1,0 +1,358 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+
+library(tidyverse)
+library(ggplot2)
+library(PubChemR)
+library(rentrez)
+library(xml2)
+library(glue)
+library(purrr)
+library(rvest)
+library(caret)
+library(DescTools)
+
+```
+
+```{r}
+
+vampr <- read_tsv("/Users/sharvari/Desktop/NCBI Codeathon/antibiogram_phenotype.txt")
+
+g <- ggplot(vampr, aes(bacteria, antibiotics, fill= phenotype)) + 
+  geom_tile() + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + ggtitle("VAMPr dataset")
+
+ggsave(plot = g, filename = "/Users/sharvari/Desktop/NCBI Codeathon/VAMPr_dataset_heatmap.png", width = 15, height = 10, dpi=300)
+
+```
+
+```{r}
+
+ecoli_vampr <- vampr %>% filter(bacteria == "Escherichia coli") %>% distinct(antibiotics)
+
+for (i in 1:nrow(ecoli_vampr)) {
+  print(ecoli_vampr$antibiotics[i])
+  try(
+    download(
+      filename = ecoli_vampr$antibiotics[i],
+      outformat = "json",
+      path = "/Users/sharvari/Desktop/NCBI Codeathon/vampr_antibiotics_2D_compound_structures/",
+      identifier = ecoli_vampr$antibiotics[i],
+      namespace = "name",
+      domain = "compound",
+      overwrite = TRUE
+    )
+  )
+}
+
+# received error for "amoxicillin-clavulanic acid" so downloading that manually (re-labelling it as "augmentin")
+
+ecoli_vampr1 <- ecoli_vampr
+ecoli_vampr1$antibiotics[1] <- "augmentin"
+
+antibiotics_df <- data.frame()
+for (i in 1:nrow(ecoli_vampr1)) {
+  print(ecoli_vampr1$antibiotics[i])
+  result <- get_pug_rest(identifier = ecoli_vampr1$antibiotics[i], namespace = "name", domain = "compound", property = c("MolecularFormula","MolecularWeight","CanonicalSMILES"), output = "CSV")
+  pubChemDataResult <- pubChemData(result)
+  pubChemDataResult$antibiotics <- ecoli_vampr1$antibiotics[i]
+  antibiotics_df <- rbind.data.frame(antibiotics_df, pubChemDataResult)
+}
+
+# there are multiple CIDs; keeping only the top one
+length(unique(antibiotics_df$CanonicalSMILES)) # 24
+length(unique(antibiotics_df$antibiotics)) #23
+
+# getting the duplicated one
+antibiotics_df %>% group_by(antibiotics, CanonicalSMILES) %>% summarise(count = n()) # cefepime has been repeated with 2 different SMILES and molecular formulas; keeping only the first one
+
+antibiotics_df1 <- antibiotics_df[match(unique(antibiotics_df$antibiotics), antibiotics_df$antibiotics),]
+
+antibiotics_df1$antibiotics[1] <- "amoxicillin-clavulanic acid"
+
+ecoli_vampr2 <- vampr %>% filter(bacteria == "Escherichia coli")
+ecoli_vampr2_ab <- left_join(ecoli_vampr2, antibiotics_df1)
+
+test1 <- ecoli_vampr2_ab %>% group_by(bacteria, antibiotics, phenotype, CID, MolecularFormula, MolecularWeight, CanonicalSMILES) %>% select(-sample_id) %>% distinct()
+test1 %>% pivot_wider(names_from = phenotype, values_from = antibiotics)
+?pivot_wider
+
+ecoli_vampr2_ab1 <- ecoli_vampr2_ab %>% select(-c(CID, MolecularFormula, MolecularWeight, CanonicalSMILES))
+test2 <- ecoli_vampr2_ab1 %>% pivot_wider(names_from = antibiotics, values_from = phenotype)
+
+write_tsv(test2, "/Users/sharvari/Desktop/ecoli_vampr_antibiotics_092524.tsv")
+
+# the first column - sample ID is actually the sample accession ID/biosample ID on NCBI
+ecoli_vampr2_ab$sample_id <- paste0("SAMN0", ecoli_vampr2_ab$sample_id)
+
+write_tsv(ecoli_vampr2_ab, "/Users/sharvari/Desktop/NCBI Codeathon/vampr_ecoli_antibiotic_smile.tsv")
+
+for (i in 3:ncol(test2)) {
+  print(colnames(test2[,i]))
+  print(table(test2[,i]))
+}
+
+test3 <- ecoli_vampr2_ab1 %>% group_by(antibiotics, phenotype) %>% summarise(count = n()) 
+
+test4 <- data.frame()
+for (i in 1:nrow(test3)) {
+  ab <- test3$antibiotics[i]
+  print(ab)
+  ab1 <- test3 %>% filter(antibiotics %in% ab) %>% arrange(desc(count))
+  ab1 <- ab1[1,]
+  if (!(ab1[1,1] %in% test4$antibiotics)) {
+    test4 <- rbind.data.frame(test4, ab1)
+  } else {
+    next
+  }
+}
+
+test4$activity <- test4$phenotype
+test4$activity[test4$activity == "susceptible"] <- 0
+test4$activity[test4$activity == "resistant"] <- 1
+test4$activity <- as.numeric(test4$activity)
+
+antibiotics_df2 <- left_join(test4[,c(1,2,4)], antibiotics_df1)
+
+write_tsv(antibiotics_df2, "/Users/sharvari/Desktop/NCBI Codeathon/ecoli_chemprop_dataset.tsv")
+write.csv(antibiotics_df2[,c(7,3)], "/Users/sharvari/Desktop/NCBI Codeathon/ecoli_chemprop_dataset_test.csv", quote = FALSE, row.names = FALSE)
+
+steven_data <- read.csv("/Users/sharvari/Desktop/NCBI Codeathon/bquxjob_10f97229_1922af4d4c4.csv")
+antibiotics_df3 <- left_join(antibiotics_df2, steven_data)
+write.csv(antibiotics_df3[,c(7,12)], "/Users/sharvari/Desktop/NCBI Codeathon/ecoli_chemprop_dataset_test1.csv", quote = FALSE, row.names = FALSE)
+
+```
+
+## AST dataset
+
+
+```{r}
+
+steven1 <- read_csv("/Users/sharvari/Desktop/NCBI Codeathon/ast_ecoli_resistant_rates.csv")
+
+for (i in 1:nrow(steven1)) {
+  print(steven1$antibiotic[i])
+  try(get_pug_rest(identifier = steven1$antibiotic[i], namespace = "name", domain = "compound", property = "CanonicalSMILES", output = "JSON"))
+}
+
+#antibiotics whose structure was not found: "imipenem-relebactam", "metronidazole", "sulfisoxazole", "ceftazidime-avibactam", "cefotaxime-clavulanic acid", "ceftazidime-clavulanic acid", "amoxicillin-clavulanic acid", "meropenem-vaborbactam", "polymyxin B", "Imipenem-EDTA-PA", "polymyxin", "bacitracin", "penicillin"
+steven2 <- steven1 %>% filter(!(antibiotic %in% c("imipenem-relebactam", "metronidazole", "sulfisoxazole", "ceftazidime-avibactam", "cefotaxime-clavulanic acid", "ceftazidime-clavulanic acid", "amoxicillin-clavulanic acid", "meropenem-vaborbactam", "polymyxin B", "Imipenem-EDTA-PA", "polymyxin", "bacitracin", "penicillin"))) # 78 
+
+antibiotics_df_st <- data.frame()
+for (i in 1:nrow(steven2)) {
+  print(steven2$antibiotic[i])
+  result <- get_pug_rest(identifier = steven2$antibiotic[i], namespace = "name", domain = "compound", property = c("MolecularFormula","MolecularWeight","CanonicalSMILES","Solubility"), output = "CSV")
+  pubChemDataResult <- pubChemData(result)
+  pubChemDataResult$antibiotics <- steven2$antibiotic[i]
+  antibiotics_df_st <- rbind.data.frame(antibiotics_df_st, pubChemDataResult)
+}
+
+# there are multiple CIDs; keeping only the top one
+length(unique(antibiotics_df_st$CanonicalSMILES)) # 76?? duplicated canonical smiles??
+length(unique(antibiotics_df_st$antibiotics)) #78
+
+# getting the duplicated one
+antibiotics_df_st %>% group_by(antibiotics, CanonicalSMILES) %>% summarise(count = n()) # cefepime has been repeated with 2 different SMILES and molecular formulas; keeping only the first one
+
+antibiotics_df_st1 <- antibiotics_df_st[match(unique(antibiotics_df_st$antibiotics), antibiotics_df_st$antibiotics),] # 78
+antibiotics_df_st1 %>% group_by(CanonicalSMILES) %>% summarise(count = n()) %>% arrange(desc(count)) # 3 repeated twice
+antibiotics_df_st2 <- antibiotics_df_st1[match(unique(antibiotics_df_st1$CanonicalSMILES), antibiotics_df_st1$CanonicalSMILES),] # 75
+
+# left join to original dataset
+colnames(steven1)[2] <- "antibiotics"
+steven1.1 <- left_join(steven1, antibiotics_df_st2) # 91
+
+# list antibiotics removed from analysis
+steven1.1_na <- steven1.1 %>% filter(is.na(CanonicalSMILES)) # 16
+
+# keep antibiotics
+steven1.2 <- steven1.1 %>% filter(!(is.na(CanonicalSMILES)))
+
+## since this data has varying sample sizes for each antibiotic, we are standardizing the data first
+# adding resistant and susceptible counts first
+steven1.2$total <- steven1.2$resistant_count + steven1.2$susceptible_count
+# removing data with 0 count
+steven1.3 <- steven1.2 %>% filter(!(total == 0)) # 69
+steven1.3$resistance_rate_percentage <- steven1.3$resistant_count/steven1.3$total
+# using wilson score interval for normalization/standardization
+steven1.3$wilson_score <- mapply(function(x, n) BinomCI(x, n, method = "wilson")[2], steven1.3$resistant_count, steven1.3$total)
+steven1.3_sub <- steven1.3 %>% select(c(antibiotics, resistant_count, total, wilson_score, resistance_rate_percentage, CanonicalSMILES, MolecularWeight))
+
+write.csv(steven1.3_sub[,c(6,4)], "/Users/sharvari/Desktop/NCBI Codeathon/steven_ecoli_chemprop.csv", quote = FALSE, row.names = FALSE)
+
+write_tsv(antibiotics_df_st2, "/Users/sharvari/Desktop/NCBI Codeathon/steven_ecoli_canonical.csv")
+
+```
+
+## AST dataset
+
+# Downloaded all E.coli data from the AST browser
+
+```{r}
+
+ast <- read_tsv("/Users/sharvari/Desktop/NCBI Codeathon/asts.tsv") # 139437
+# keeping only clinical data
+ast1 <- ast %>% filter(`Isolation type` == "clinical") # 58,990
+# keeping only E coli
+ast1 <- ast1 %>% filter(`Scientific name` %in% grep("Escherichia coli", ast1$`Scientific name`, value = TRUE)) # 58,810
+# keep only Homo sapiens
+ast1 <- ast1 %>% filter(Host %in% "Homo sapiens") # 52175
+
+# removing undefined resistance phenotypes
+unique(ast1$`Resistance phenotype`)
+table(ast1$`Resistance phenotype`)
+ast1 <- ast1 %>% filter(!(`Resistance phenotype` == "not defined")) # 51644
+
+# keeping "intermediate" as "intermediate" and changing "nonsusceptible" to "resistant" and "susceptible-dose dependent" to "susceptible"
+ast2 <- ast1
+ast2$`Resistance phenotype`[ast2$`Resistance phenotype` == "nonsusceptible"] <- "resistant"
+ast2$`Resistance phenotype`[ast2$`Resistance phenotype` == "susceptible-dose dependent"] <- "susceptible"
+
+# categories to use:
+# isolation source: categorical
+# resistance phenotype: categorical (change resistance to 1, susceptible to 0 and intermediate to 2)
+# MIC : numeric
+# measurement sign: categorical
+# molecular weight: numeric
+# location
+length(unique(ast2$Antibiotic)) # 71
+setdiff(ast2$Antibiotic, antibiotics_df_st2$antibiotics) # 9
+
+# only keeping antibiotics with SMILES data
+colnames(ast2)[8] <- "antibiotics"
+ast3 <- left_join(ast2, antibiotics_df_st2)
+# removing NA from SMILES
+ast3 <- ast3 %>% filter(!(is.na(CanonicalSMILES))) # 48862
+# removing NAs from isolation source
+ast3 <- ast3 %>% filter(!(is.na(`Isolation source`))) # 48783
+# keeping only the country name in Location
+ast3$Location <- gsub(":(.*)", "", ast3$Location)
+table(ast3$Location)
+# removing NAs from Location
+ast3 <- ast3 %>% filter(!(is.na(Location))) # 48783
+
+# get isolation source and re-name them
+table(ast3$`Isolation source`)
+# re-naming isolation source into general categories: 
+# "Abdomen": "abdomen", "abdominal", "Abdominal wall"
+# "Abscess": "Abdominal abscess", "abscess", "Abscess", "Breast abscess", "Labial abscess", "Pelvic abscess", "Perianal abscess", "Perirectal abscess", "Wound abscess"
+# "Wound": "Abdominal wound", "Foot wound", "Left tribial wound", "Perineal area wound", "Perinial wound", "Swab from Wound", "wound", "Vaginal wound", "Wound - sacrum"
+# "Anus": "Anus", "Buttock"
+# "Aspirate": "aspirate", "aspirate, biliary drain"
+# "Bile": "bile", "bile duct discharge", "Biliary tube placement"
+# "Blood": "blood", "blood culture", "Blood_whole"
+# "Breast": "Breast biopsy"
+# "Bronchial": "Bronchial alveolar lavage"
+# "Catheter": "catheterized specimen"
+# "Lesions": "Coccygeal lesions"
+# "Drainage": "drain from toe infection", "drainage", "IR drain", "biliary drain", "Wound drainage"
+# "Feces": "faecal sample", "feces"
+# "Fluid": "fluid", "Fluid", "FLUID", "Fluid_Peritoneal", "IR fluid", "Pelvic fluid", "Peritoneal fluid"
+# "Ulcer": "Foot ulcer", "Sacral ulcer", "ulcer"
+# "Gall bladder": "gall bladder", "Gall bladder"
+# "Sputum": "induced sputum", "sputum"
+# "Infection": "infection secondary to perforated appendicitis", "joint infection", "post-colorectal surgical infection", "Urinary tract infection"
+# "Rectum": "Perirectal", "rectal", "Rectal", "rectal swab", "Rectal swab", "Rectal Swab", "Rectum"
+# "Trachea": "Secretion from the trachea branch", "tacheal aspirate", "tracheal aspirate"
+# "Groin": "Surveillance swab - Groin"
+# "Tissue": "TISSUE", "Tissue_Liver", "Tissue"
+# "Urine": "urine", "Urine of the patient"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("abdomen", "abdominal", "Abdominal wall")] <- "abdomen"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Abdominal abscess", "abscess", "Abscess", "Breast abscess", "Labial abscess", "Pelvic abscess", "Perianal abscess", "Perirectal abscess", "Wound abscess")] <- "abscess"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Abdominal wound", "Foot wound", "Left tribial wound", "Perineal area wound", "Perinial wound", "Swab from Wound", "wound", "Vaginal wound", "Wound - sacrum")] <- "wound"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Buttock")] <- "Anus"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("aspirate", "aspirate, biliary drain")] <- "aspirate"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("bile duct discharge", "Biliary tube placement")] <- "bile"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("blood", "blood culture", "Blood_whole")] <- "blood"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Breast biopsy")] <- "breast"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Bronchial alveolar lavage")] <- "bronchial"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("catheterized specimen")] <- "catheter"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Coccygeal lesions")] <- "lesions"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("drain from toe infection", "drainage", "IR drain", "biliary drain", "Wound drainage")] <- "drainage"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("faecal sample", "feces")] <- "feces"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("fluid", "Fluid", "FLUID", "Fluid_Peritoneal", "IR fluid", "Pelvic fluid", "Peritoneal fluid")] <- "fluid"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Foot ulcer", "Sacral ulcer", "ulcer")] <- "ulcer"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("gall bladder", "Gall bladder")] <- "gall bladder"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("induced sputum", "sputum")] <- "sputum"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("infection secondary to perforated appendicitis", "joint infection", "post-colorectal surgical infection", "Urinary tract infection")] <- "infection"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Perirectal", "rectal", "Rectal", "rectal swab", "Rectal swab", "Rectal Swab", "Rectum")] <- "Rectum"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Secretion from the trachea branch", "tacheal aspirate", "tracheal aspirate")] <- "Trachea"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("Surveillance swab - Groin")] <- "Groin"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("TISSUE", "Tissue_Liver", "Tissue")] <- "Tissue"
+ast3$`Isolation source`[ast3$`Isolation source` %in% c("urine", "Urine of the patient")] <- "Urine"
+
+table(ast3$`Isolation source`)
+
+```
+
+## Getting the Microbiggie dataset
+# Microbiggie search: scientific_name:escherichia coli && type:AMR && subtype:AMR && pct_ref_coverage:100
+
+```{r}
+
+microbiggie <- read_tsv("/Users/sharvari/Desktop/NCBI Codeathon/microbigge.tsv") # 2,718,885
+# keep e.coli
+microbiggie <- microbiggie %>% filter(`#Scientific name` == "Escherichia coli") # 2561908
+# keeping only the IDs in the AST data
+length(unique(ast3$Isolate)) # 3012
+length(unique(ast3$`#BioSample`)) # 3012
+microbiggie <- microbiggie %>% filter(Isolate %in% unique(ast3$Isolate)) #23132
+length(unique(microbiggie$Isolate)) # 2892 (missing a few isolates)
+
+# only keeping few necessary columns (the AMR gene targets)
+microbiggie1 <- microbiggie %>% select(c(Isolate, `Element symbol`))
+microbiggie1$Gene <- gsub("-(.*)", "", microbiggie1$`Element symbol`)
+microbiggie1 <- microbiggie1 %>% select(-`Element symbol`)
+
+# removing duplicate rows
+microbiggie1 <- microbiggie1[!duplicated(microbiggie1),] # 17,951
+
+# pivot_wider
+microbiggie1$value <- 1
+microbiggie2 <- microbiggie1 %>% pivot_wider(names_from = Gene, values_from = value) # 2,892
+# change NA to 0
+microbiggie2[is.na(microbiggie2)] <- 0
+
+# now add this data to ast data
+ast4 <- inner_join(ast3, microbiggie2) # 46,497
+
+# keep only select columns
+ast4 <- ast4 %>% select(-c(`#BioSample`, `Organism group`, `Scientific name`, `Isolation type`, Isolate, `Disk diffusion (mm)`, `Laboratory typing platform`, Vendor, `Laboratory typing method version or reagent`, `Testing standard`, `Create date`, Host, CID, MolecularFormula)) # 46,497
+
+# remove any rows containing NA
+ast4 <- na.omit(ast4) # 45,754
+
+# removing duplicate rows
+ast5 <- ast4[!duplicated(ast4),] # 14,909
+
+write_tsv(ast5, "/Users/sharvari/Desktop/NCBI Codeathon/ecoli_ast_microbiggie_smile_metadata.tsv")
+
+```
+
+
+## the plan in this section of the code is to use the biosample ID to retrieve genomic and metadata information from NCBI
+
+## Reference: https://gist.github.com/tomsing1/ad769fa0394bf9ce04b4f786528762a5
+
+```{r}
+
+test <- entrez_search(db = "biosample", term = "SAMN03177615", retmax=0)
+records <- xml2::read_xml(
+  entrez_fetch("biosample", id = "SAMN03177615", rettype = "xml")
+)
+
+xml_data <- xml2::as_list(records)
+
+as.data.frame(unlist(xml_data$BioSampleSet$BioSample$Description$Comment$Table$Body))
+do.call(rbind.data.frame, xml_data$BioSampleSet$BioSample$Links$Link)
+
+attr(xml_data$BioSampleSet$BioSample$Links$Link, "label")
+
+source("/Users/sharvari/Desktop/NCBI Codeathon/BioSampleParser.R")
+df_metadata <- BioSampleParser(query = "PRJNA266657")
+
+```
+
