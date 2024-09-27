@@ -28,13 +28,18 @@ Keywords: Graph neural networks, AMR detection, Antibiotics, Genomic data, Struc
 - Integrate and preprocess data from AST and VAMPr databases.
 - Prepare molecular structure data for Chemprop input.
 - Format antibiotic resistance data as labels for supervised learning.
+- Calculated a resistance_rate variable based on the proportion of resistance cases for each antibiotic.
+- Normalized the resistance rate using Wilson score interval for use in Chemprop.
 
 ### Model construction
 Chemprop Workflow for Antibiotic Resistance Prediction
 
 - Utilize Chemprop's built-in graph neural network architecture for molecular property prediction.
 - Represent antibiotics as molecular graphs using SMILES notation.
-- Incorporate bacterial genomic features as additional input to the model.
+- Tuned hyperparameters to improve modeling, including:
+  - Increasing the default epoch
+  - Adjusting batch size
+  - Modifying model depth
 
 ### Model training and evaluation
 
@@ -57,9 +62,11 @@ Chemprop Workflow for Antibiotic Resistance Prediction
 ```pip install torch torch-geometric pandas google-cloud-bigquery chemprop rdkit scikit-learn```
 
 ### Usage
-
+```jupyter notebook model.ipynb &```
 ## Results
-
+Our Chemprop-based model for predicting antibiotic resistance demonstrated promising results in several key areas:
+- Identified key molecular substructures associated with increased resistance.
+- 
 ## References 
 Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
 Heid, Esther, et al. "Chemprop: a machine learning package for chemical property prediction." Journal of Chemical Information and Modeling 64.1 (2023): 9-17.
