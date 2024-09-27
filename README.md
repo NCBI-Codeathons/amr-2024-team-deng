@@ -23,7 +23,7 @@ Keywords: Graph neural networks, AMR detection, Antibiotics, Genomic data, Struc
 - Using the VAMPr(VAriant Mapping and Prediction of antibiotic resistance) database, we acquired a dataset consisting of information about bacteria-antibiotic relationships.
 - Retrieve data from AST (Antimicrobial Susceptibility Testing) and MicroBig-EE databases with a focus on E coli.
 - Downlaod antibiotics' structure data from PubChem
-
+![resistance-heatmap](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/resistance-heatmap.png)
 ### Data processing 
 - Integrate and preprocess data from AST and VAMPr databases.
 - Prepare molecular structure data for Chemprop input.
