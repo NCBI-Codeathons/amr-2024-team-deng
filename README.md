@@ -25,42 +25,36 @@ Keywords: Graph neural networks, AMR detection, Antibiotics, Genomic data, Struc
 - Downlaod antibiotics' structure data from PubChem
 
 ### Data processing 
-- Build a graph linking antibiotic data from AST to phenotype information.
-- Incorporate additional data from MicroBig-EE, chemprop, and other relevant sources.
+- Integrate and preprocess data from AST and VAMPr databases.
+- Prepare molecular structure data for Chemprop input.
+- Format antibiotic resistance data as labels for supervised learning.
 
 ### Model construction
-GNN Workflow for Antibiotic Resistance Prediction
+Chemprop Workflow for Antibiotic Resistance Prediction
 
-- Define Nodes:
-  - Treat bacteria and antibiotics as nodes in the graph.
-  - Create node embeddings using genetic information or latent representations from genomic data.
-
-- Create Adjacency Matrix:
-  - Use binary data (resistance vs non-resistance) from the VAMPr or AST data to build the adjacency matrix.
-
-- Graph construction:
-  - Nodes: Embedded bacteria and antibiotics.
-  - Edges: Represent resistance or susceptibility between bacteria and antibiotics.
-
-- Link Prediction:
-  - Perform link prediction to predict whether an unobserved bacterium (e.g., B1) is resistant to antibiotics (A1 to An).
-  - The model will learn to predict edges, where a link between a bacterium and antibiotic represents resistance.
+- Utilize Chemprop's built-in graph neural network architecture for molecular property prediction.
+- Represent antibiotics as molecular graphs using SMILES notation.
+- Incorporate bacterial genomic features as additional input to the model.
 
 ### Model training and evaluation
 
-- Create a GNN model and train it on the processed data.
-- Evaluate the model by predicting whether new bacteria exhibit resistance to specific antibiotics, based on the learned graph structure.
+- Train the Chemprop model on the processed AST and VAMPr data.
+- Use cross-validation to assess model performance and prevent overfitting.
+- Evaluate the model by predicting resistance for known antibiotics and potentially new compounds.
 
 ## Getting Started
 ### Prerequisites
 - Python 3.7+
+- Chemprop
+- RDKit
 - PyTorch
 - PyTorch Geometric
 - pandas
 - Google Cloud BigQuery
+- scikit-learn
 
 ### Installation 
-```pip install torch torch-geometric pandas google-cloud-bigquery```
+```pip install torch torch-geometric pandas google-cloud-bigquery chemprop rdkit scikit-learn```
 
 ### Usage
 
@@ -68,9 +62,9 @@ GNN Workflow for Antibiotic Resistance Prediction
 
 ## References 
 Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
+Heid, Esther, et al. "Chemprop: a machine learning package for chemical property prediction." Journal of Chemical Information and Modeling 64.1 (2023): 9-17.
 
 ## Future Work
-
 ## NCBI Codeathon Disclaimer
 
 This software was created as part of an NCBI codeathon, a hackathon-style event focused on rapid innovation. While we encourage you to explore and adapt this code, please be aware that NCBI does not provide ongoing support for it.
