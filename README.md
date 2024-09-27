@@ -50,6 +50,7 @@ Chemprop Workflow for Antibiotic Resistance Prediction
 
 
 ## Results
+![resistance-heatmap](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/ecoli_chemprop.png)
 Our Chemprop-based model for predicting antibiotic resistance demonstrated promising results in several key areas:
  - The initial model using VAMPr data showed limitations due to the small dataset size.
  - The switch to AST data for E. coli provided more robust results.
