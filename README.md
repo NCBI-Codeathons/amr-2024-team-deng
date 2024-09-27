@@ -83,6 +83,8 @@ Our Chemprop-based model for predicting antibiotic resistance demonstrated promi
 - Incorporate additional molecular descriptors and bacterial genomic features to improve prediction accuracy.
 - Develop a web interface for easy access to the AMR prediction tool.
 
+ Specific improvements include: a) incorporation of biological data from Microbigg-e including AMR resistance genes, isolation source, b) incorporation of additional biological data including genetic sequences/protein structures and plasmid data, c) incorporation of additional metadata for Chemprop, such as solubility, molecular weight, molecule-target interactions, chemical bond information, etc., d) tuning chemprop hyperparameters for better accuracy, e) building a random forest classifier or another model on chemprop for ensemble modeling, f) addition of more biological data and expanding to more microbes
+
 ## NCBI Codeathon Disclaimer
 
 This software was created as part of an NCBI codeathon, a hackathon-style event focused on rapid innovation. While we encourage you to explore and adapt this code, please be aware that NCBI does not provide ongoing support for it.
