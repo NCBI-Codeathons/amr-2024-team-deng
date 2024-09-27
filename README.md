@@ -74,6 +74,8 @@ Our Chemprop-based model for predicting antibiotic resistance demonstrated promi
 
 ### Usage
 ```jupyter notebook notebooks/model.ipynb &```
+ChemProp CLI command: 
+```chemprop train --data-path ecoli_chemprop.csv --task-type regression --output-dir ecoli_chemprop1 --epochs 65 --batch-size 30 --depth 5 -n 9```
 
 ## References 
 - Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
