@@ -65,8 +65,10 @@ Chemprop Workflow for Antibiotic Resistance Prediction
 ```jupyter notebook model.ipynb &```
 ## Results
 Our Chemprop-based model for predicting antibiotic resistance demonstrated promising results in several key areas:
-- Identified key molecular substructures associated with increased resistance.
-- 
+ - The initial model using VAMPr data showed limitations due to the small dataset size.
+ - The switch to AST data for E. coli provided more robust results.
+ - Hyperparameter tuning demonstrated positive impacts on model performance.
+
 ## References 
 Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
 Heid, Esther, et al. "Chemprop: a machine learning package for chemical property prediction." Journal of Chemical Information and Modeling 64.1 (2023): 9-17.
