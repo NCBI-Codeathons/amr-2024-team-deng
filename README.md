@@ -74,6 +74,7 @@ Our Chemprop-based model for predicting antibiotic resistance demonstrated promi
 
 ### Usage
 ```jupyter notebook notebooks/model.ipynb &```
+
 ChemProp CLI command: 
 ```chemprop train --data-path ecoli_chemprop.csv --task-type regression --output-dir ecoli_chemprop1 --epochs 65 --batch-size 30 --depth 5 -n 9```
 
