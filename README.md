@@ -11,7 +11,7 @@ List of participants and affiliations:
 - Shu Cheng, Tennessee Department of Health Laboratory Services
   
 ## Project Goals
-
+![toc](https://github.com/NCBI-Codeathons/amr-2024-team-deng/blob/main/toc.png)
 This project aims to develop a deep-learning model to predict antibiotic resistance in bacteria using genomic and structural information of bacterial receptors and antibiotics. The model will utilize graph neural networks to identify AMR biomarkers and predict the antibiotic resistence of new compounds.
 
 Keywords: Graph neural networks, AMR detection, Antibiotics, Genomic data, Structural data, Drug resistance, Machine learning
