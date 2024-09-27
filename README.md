@@ -63,7 +63,9 @@ Our Chemprop-based model for predicting antibiotic resistance demonstrated promi
 
 
 ## Getting Started
+
 ### Prerequisites
+
 - Python 3.7+
 - Chemprop
 - RDKit
@@ -80,13 +82,16 @@ Our Chemprop-based model for predicting antibiotic resistance demonstrated promi
 ```jupyter notebook notebooks/model.ipynb &```
 
 ChemProp CLI command: 
+
 ```chemprop train --data-path ecoli_chemprop.csv --task-type regression --output-dir ecoli_chemprop1 --epochs 65 --batch-size 30 --depth 5 -n 9```
 
 ## References 
+
 - Kim, J., Greenberg, D. E., Pifer, R., Jiang, S., Xiao, G., Shelburne, S. A., Koh, A., Xie, Y., & Zhan, X. (2020). VAMPr: VAriant Mapping and Prediction of antibiotic resistance via explainable features and machine learning. PLoS computational biology, 16(1), e1007511. https://doi.org/10.1371/journal.pcbi.1007511 
 - Heid, Esther, et al. "Chemprop: a machine learning package for chemical property prediction." Journal of Chemical Information and Modeling 64.1 (2023): 9-17.
 
 ## Future Work
+
 - Expand the model to predict resistance for a wider range of bacteria and antibiotics.
 - Incorporate additional molecular descriptors and bacterial genomic features to improve prediction accuracy.
 - Develop a web interface for easy access to the AMR prediction tool.
